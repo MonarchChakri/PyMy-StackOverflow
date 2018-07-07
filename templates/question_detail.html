@@ -1,0 +1,124 @@
+{% extends "base.html" %} {% block breadcrumb %}
+<li>
+    <a href="{{ question.get_absolute_url }}">{{ question.title }}</a>
+</li>
+{% endblock %} {% block content %} {% load static %} {% load crispy_forms_tags %}
+<div class="row" style="margin-top: 25px">
+    <div class='col-sm-7 col-sm-offset-3'>
+        <div class="thumbnail">
+            {% if question.image and question.image.url %}
+            <img src="{{ question.image.url }}" alt="question image" class="img-responsive"> {% endif %}
+            <div class="caption">
+                <h1>{{ title }}
+                    <small>{{ question.timestamp }}</small>
+                    <div class="fb-share-button" data-href="{{ request.build_absolute_uri }}" data-layout="button_count">
+                    </div>
+                </h1>
+                {% if question.user.get_full_name %}
+                <p>Posted by: {{ question.user.get_full_name }}</p>
+                {% else %}
+                <p>Posted by: {{ question.user }}</p>
+                {% endif %}
+                <div class="post-item">{{ question.get_markdown }}</div>
+
+                <div>
+                    <span>
+                        Votes: {{ question.reputation_count }}
+                    </span>
+                </div>
+
+                {% if request.user != question.user %}
+                <div>
+                    <span>
+                        <a href="{{ question.get_absolute_url }}upvote/">Upvote</a>
+                    </span>
+                    <span>
+                        <a href="{{ question.get_absolute_url }}downvote/">Downvote</a>
+                    </span>
+                </div>
+                {% endif %} {% if request.user == question.user %}
+                <div>
+                    <span>
+                        <a href="{{ question.get_absolute_url }}update/" class="btn btn-primary" role="button">Update</a>
+                    </span>
+                    <span style="float: right;">
+                        <a href="{{ question.get_absolute_url }}delete/" class="btn btn-danger" role="button">Delete</a>
+                    </span>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+<hr />
+
+<div class='col-sm-7 col-sm-offset-3'>
+    <h3>Answers: </h3>
+    {% if request.user.is_authenticated %}
+    <form method='POST' action='.' enctype="multipart/form-data">{% csrf_token %} {{ answer_form|crispy }}
+        <div style="float: right;">
+            <input type='submit' class='btn btn-success' value='Add answer' />
+        </div>
+    </form>
+    {% else %}
+    <a href="/login/">Login</a> to answer {% endif %}
+    <br />
+
+    <hr /> {% for answer in answers %}
+    <blockquote class="answer-item">
+        <small>
+            {{ answer.get_markdown }}
+        </small>
+
+        <div>
+            <input type="hidden" name="current_page_url" value="{{ question.get_absolute_url }}" />
+            <div style="float: right;">
+                {% if request.user == answer.user %}
+
+                <div style="float: right;">
+                    <a href="{{ answer.get_delete_url }}">
+                        Delete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <footer>by {{ answer.user }} | {{ answer.timestamp }} | {% if answer.children.count > 0 %} {{ answer.children.count }} Comment{% if answer.children.count > 1 %}s {% endif %} | {% endif %}
+                <a href="#" class="answer-replies-toggle">Reply</a> |
+                <a href="{{ answer.get_absolute_url }}">Thread</a>
+            </footer>
+
+            <div class="answer-reply" style="display: none;">
+                {% for comment in answer.children %}
+                <blockquote class="answer-item">
+                    <p>{{ comment.get_markdown }}</p>
+                    <footer>by {{ comment.user }} | {{ comment.timestamp }} </footer>
+                    <div style="float: right;">
+                        {% if request.user == comment.user %}
+                        <div style="float: right;">
+                            <a href="{{ comment.get_delete_url }}">
+                                Delete
+                            </a>
+                        </div>
+                        {% endif %}
+                    </div>
+                </blockquote>
+                <hr /> {% endfor %} {% if request.user.is_authenticated %}
+                <form method='POST' action='.' enctype="multipart/form-data">{% csrf_token %} {{ answer_form|crispy }}
+                    <div style="float: right;">
+                        <input type="hidden" name="parent_id" value="{{ answer.id }}" />
+                        <input type='submit' class='btn btn-success' value='Post Comment' />
+                    </div>
+                </form>
+                {% else %}
+                <a href="/login/">Login</a> to reply {% endif %}
+                <br />
+            </div>
+
+
+    </blockquote>
+    <hr /> {% endfor %}
+    </div>
+
+    {% endblock content %}

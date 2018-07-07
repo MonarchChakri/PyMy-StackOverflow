@@ -1,0 +1,52 @@
+ {% if messages %}
+<center style="margin-top: 25px">
+    <span>
+        <ul style="list-style-type:none" id="messages">
+            {% for message in messages %}
+
+            <li>
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+                <div>
+                    <span class="alert alert-success" role="alert">
+                        {% if "html_safe" in message.tags %} {{ message|safe }} {% else %} {{ message }} {% endif %}
+                        <button type="button" class="close" aria-label="Close" style="float: left;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </span>
+                </div>
+                {% else %}
+                <div>
+                    <span class="alert alert-danger" role="alert">
+                        {% if "html_safe" in message.tags %} {{ message|safe }} {% else %} {{ message }} {% endif %}
+                        <button type="button" class="close" aria-label="Close" style="float: left;">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </span>
+                </div>
+                {% endif %}
+                <hr />
+            </li>
+
+            {% endfor %}
+        </ul>
+    </span>
+</center>
+
+<script>
+
+    var items = document.querySelectorAll("#messages li"),
+        tab = [], liIndex;
+
+    for (var i = 0; i < items.length; i++) {
+        items[i].setAttribute('id', i.toString());
+        tab.push(i.toString());
+    }
+
+    for (var i = 0; i < items.length; i++) {
+        items[i].getElementsByClassName('close')[0].onclick = function () {
+            liIndex = tab.indexOf(this.parentElement.parentElement.parentElement.getAttribute('id').toString());
+            items[liIndex].parentNode.removeChild(items[liIndex]);
+        };
+    }
+
+</script> {% endif %}

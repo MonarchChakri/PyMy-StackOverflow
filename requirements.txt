@@ -1,0 +1,14 @@
+brotlipy==0.7.0
+cffi==1.11.5
+Django>=1.11
+django-crispy-forms==1.7.2
+django-markdown-deux==1.0.5
+markdown2==2.3.5
+Pillow==5.2.0
+pycparser==2.18
+pytz==2018.5
+South==1.0.2
+whitenoise==3.3.1
+django-debug-toolbar==1.8
+gunicorn==19.4.5
+psycopg2==2.7.3.1

@@ -1,0 +1,51 @@
+{% extends "base.html" %} {% block breadcrumb %}
+<li>
+    <a href="{{ answer.question.get_absolute_url }}">{{ answer.question.title }}</a>
+</li>
+<li>
+    Answers
+</li>
+{% endblock %} {% block content %} {% load crispy_forms_tags %}
+<div class='col-sm-7 col-sm-offset-3'>
+    <h6>{{ answer.get_markdown }}
+        <small>{{ answer.timestamp }}</small>
+        <div class="fb-share-button" data-href="{{ request.build_absolute_uri }}" data-layout="button_count">
+        </div>
+    </h6>
+
+    <ul>
+        <li>by {{ answer.user }} | on
+            <a href='{{ answer.question.get_absolute_url }}'>{{ answer.question.title }}</a> {% if answer.children.count > 0 %} | {{ answer.children.count }} Comment{% if answer.children.count > 1 %}s {% endif %} {% endif %}
+        </li>
+    </ul>
+    <hr />
+
+    <div class="answer-reply">
+        {% for comment in answer.children %}
+        <blockquote class="answer-item">
+            <p>{{ comment.get_markdown }}</p>
+            <footer>by {{ comment.user }} | {{ comment.timestamp }} </footer>
+            <div style="float: right;">
+                {% if request.user == comment.user %}
+                <div style="float: right;">
+                    <a href="{{ comment.get_delete_url }}">
+                        Delete
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </blockquote>
+        <hr /> {% endfor %} {% if request.user.is_authenticated %}
+        <form method='POST' action='.' enctype="multipart/form-data">{% csrf_token %} {{ comment_form|crispy }}
+            <div style="float: right;">
+                <input type='submit' class='btn btn-success' value='Post Comment' />
+            </div>
+        </form>
+        {% else %}
+        <a href="/login/">Login</a> to reply {% endif %}
+        <br />
+    </div>
+
+</div>
+
+{% endblock content %}
