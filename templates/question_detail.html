@@ -11,8 +11,6 @@
             <div class="caption">
                 <h1>{{ title }}
                     <small>{{ question.timestamp }}</small>
-                    <div class="fb-share-button" data-href="{{ request.build_absolute_uri }}" data-layout="button_count">
-                    </div>
                 </h1>
                 {% if question.user.get_full_name %}
                 <p>Posted by: {{ question.user.get_full_name }}</p>
