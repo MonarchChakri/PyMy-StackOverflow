@@ -61,10 +61,19 @@ TEMPLATES = [
 WSGI_APPLICATION = 'wsgi.application'
 
 from . import database
+# Change debug to True if you are running on local system
+if DEBUG == False:
+    DATABASES = {
+        'default': database.config()
+    }
 
-DATABASES = {
-    'default': database.config()
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': 'db',
+        }
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
